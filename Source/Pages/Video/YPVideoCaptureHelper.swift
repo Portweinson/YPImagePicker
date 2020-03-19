@@ -81,13 +81,7 @@ class YPVideoCaptureHelper: NSObject {
             strongSelf.session.resetInputs()
             
             if let videoInput = strongSelf.videoInput {
-                guard let flipped = flippedDeviceInputForInput(videoInput) else {
-                    DispatchQueue.main.async {
-                        completion()
-                    }
-                    return
-                }
-                strongSelf.videoInput = flipped
+                strongSelf.videoInput = flippedDeviceInputForInput(videoInput)
             }
             
             if let videoInput = strongSelf.videoInput {
