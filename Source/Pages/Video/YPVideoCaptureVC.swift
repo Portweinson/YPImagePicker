@@ -15,6 +15,7 @@ public class YPVideoCaptureVC: UIViewController, YPPermissionCheckable {
     private let videoHelper = YPVideoCaptureHelper()
     private let v = YPCameraView(overlayView: nil)
     private var viewState = ViewState()
+    private var isOnScreen = false
     
     // MARK: - Init
     
@@ -60,15 +61,30 @@ public class YPVideoCaptureVC: UIViewController, YPPermissionCheckable {
             guard let strongSelf = self else {
                 return
             }
-            self?.videoHelper.start(previewView: strongSelf.v.previewViewContainer,
-                                    withVideoRecordingLimit: YPConfig.video.recordingTimeLimit,
-                                    completion: {
-                                        DispatchQueue.main.async {
-                                            self?.v.shotButton.isEnabled = true
-                                            self?.refreshState()
-                                        }
-            })
+            
+            if strongSelf.isOnScreen == true {
+                self?.startVideoSession()
+            }
         }
+    }
+    
+    override public func viewDidAppear(_ animated: Bool) {
+        
+        if isOnScreen == false {
+            startVideoSession()
+        }
+        isOnScreen == true
+    }
+    
+    private func startVideoSession() {
+        self.videoHelper.start(previewView: self.v.previewViewContainer,
+                                withVideoRecordingLimit: YPConfig.video.recordingTimeLimit,
+                                completion: {
+                                    DispatchQueue.main.async { [weak self] in
+                                        self?.v.shotButton.isEnabled = true
+                                        self?.refreshState()
+                                    }
+        })
     }
     
     func refreshState() {
